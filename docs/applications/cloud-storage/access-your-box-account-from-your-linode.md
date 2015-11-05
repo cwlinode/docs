@@ -16,15 +16,15 @@ title: 'Access Your Box.com Account from Your Linode'
 
 <hr>
 
-If you've discovered [Box](https://www.box.com/home/) then you know that it can be a great tool for moving files around. Here's how to install and configure a great free pisoftware to access your Box from your Linode!
+If you've discovered [Box](https://www.box.com/home/), then you know that it can be a handy tool for moving and managing files. The following tutorial helps you install and configure a free piece of software that facilitates Box access from your Linode.
 
 ## Before You Begin
 
 1.  Familiarize yourself with our [Getting Started](/docs/getting-started) guide and complete the steps for setting your Linode's hostname and timezone.
 
-2.  This guide will use `sudo` wherever possible. Complete the sections of our [Securing Your Server](/docs/security/securing-your-server) to create a standard user account, harden SSH access and remove unnecessary network services.
+2.  This guide will use `sudo` wherever possible. Complete the sections of our [Securing Your Server](/docs/security/securing-your-server) to create a standard user account, toughen SSH access and remove unnecessary network services.
 
-3.  Update your system.
+3.  Update your system:
 
         sudo dnf update
 
@@ -34,7 +34,7 @@ If you've discovered [Box](https://www.box.com/home/) then you know that it can 
 
 ## Set Box's Mount Point
 
-The following step will create an empty directory where Box will live and all of your Box files and folders will appear here. You can mount it anywhere, but `/home/example_user/box` will be used for this guide.
+The following step will create an empty directory where Box will live and all of your Box files and folders will appear. You can mount it anywhere, but `/home/example_user/box` will be used for this guide.
 
 1.  Create a mount point:
 
@@ -42,10 +42,11 @@ The following step will create an empty directory where Box will live and all of
 
     {: .note}
     >
-    >If only your `example_user` needs access to the Box account contents, making the mount point in that user's `/home` directory would be fine. If multiple system users (other than root) need to access the Box account, then it should be placed in a system directory such as `/mnt/box`. For more info, see [the davfs man page](http://linux.die.net/man/8/mount.davfs).
+    >If only your `example_user` needs access to the Box account contents, making the mount point in that user's `/home` directory will be fine. If multiple system users (other than root) need access to the Box account, then the mount point should be placed in a system directory such as `/mnt/box`. For more info, see [the davfs man page](http://linux.die.net/man/8/mount.davfs).
 2.  Add Box to fstab.
 
-    The fstab (or file systems table) file is a system configuration file commonly found at `/etc/fstab`. It contains the necessary information to automate the process of mounting. Add an entry for your Box account.
+    The fstab (or file systems table) file is a system configuration file commonly found at `/etc/fstab`. It contains the necessary information to automate the process of mounting. 
+    Add an entry for your Box account:
 
     {: .file-excerpt}
     /etc/fstab
@@ -55,7 +56,7 @@ The following step will create an empty directory where Box will live and all of
 
 ## Configure WebDAV and User Permissions
 
-1.  Install davfs2, the WebDAV backend which is used to communicate between your Linode and Box account.
+1.  Install davfs2, the WebDAV backend which is used to communicate between your Linode and Box account:
 
     **CentOS**
 
@@ -72,23 +73,23 @@ The following step will create an empty directory where Box will live and all of
 
         sudo dnf install davfs2
 
-2.  Give Your user permission to mount using davfs2. Replace `example_user` with your user name.
+2.  Give your user permission to mount using davfs2. Replace `example_user` with your user name.
 
         sudo usermod -aG davfs2 "example_user"
 
-3.  Reboot your distro. This is the best way to be sure there are no lingering open user sessions. If there are, you'll experience problems mounting the Box drive even after adding your user to the proper group.
+3.  Reboot your distro. This is the best way to be sure there are no lingering, open, user sessions. If there are, you'll experience problems mounting the Box drive even after adding your user to the proper group.
 
         sudo reboot
 
-4.  SSH back into your Linode and try mounting your Box account using WebDAV. It will fail saying that the davfs2 secrets file has the wrong permissions, but this is just to create the necessary files for davfs2 in your home directory at `~/.davfs2`.
+4.  SSH back into your Linode and try mounting your Box account using WebDAV. It will fail saying that the davfs2 secrets file has the wrong permissions, but this is just to create the necessary files for davfs2 in your home directory at `~/.davfs2`:
 
         mount ~/box
 
-5.  The WebDAV share exported by Box.com does not support file locks. Thus you need to disable file locks in the davfs2 configuration file. Otherwise, you will encounter "Input/output error" while attempting to create a file.
+5.  The WebDAV share exported by Box.com does not support file locks. Thus, you need to disable file locks in the davfs2 configuration file. Otherwise, you will encounter "Input/output error" while attempting to create a file.
 
         echo 'use_locks 0' >> ~/.davfs2/davfs2.conf
 
-6.  Add your Box account info to WebDAV's secrets file. Replacing `email` with the email addres you use to log in to your Box accounrt, and `password` with your Box password.
+6.  Add your Box account info to WebDAV's secrets file, replacing both `email` with the email address you use to log in to your Box account and `password` with your Box password:
 
         echo 'https://dav.box.com/dav email password' >> ~/.davfs2/secrets
 
@@ -96,7 +97,7 @@ The following step will create an empty directory where Box will live and all of
     >
     >If your password contains quotation characters (`'` or `"`), you'll need to open edit the secrets file in a text editor.
 
-7. Make the `secrets` file readable to only its owner.
+7. Make the `secrets` file readable to only its owner:
 
         chmod 600 ~/.davfs2/secrets
 
@@ -116,7 +117,7 @@ To confirm that your Box drive is mounted:
 
     df
 
-The output should look similar to:
+The output should look similar to this:
 
 ~~~
 Filesystem              1K-blocks   Used Available Use% Mounted on
@@ -130,12 +131,12 @@ tmpfs                      101504      0    101504   0% /run/user/1000
 https://dav.box.com/dav  10485756     72  10485684   1% /home/example_user/box
 ~~~
 
-To see the mount options your Box drive is mounted with:
+To see the mount options with which your Box drive is mounted:
 
     cat /proc/mounts | grep box
 
-The output should show:
+The output should show the following:
 
     https://dav.box.com/dav /home/example_user/box fuse rw,nosuid,nodev,noexec,relatime,user_id=1000,group_id=1000,allow_other,max_read=16384 0 0
 
-And you're done!  The directory `~/box` will now reflect your Box contents! The first time you access the folder it may take a few minutes for the contents to synchronize. After that, folder access is almost immediate.
+You're done!  The directory `~/box` will now reflect your Box contents. The first time you access the folder, it may take a few minutes for the contents to synchronize. After that, folder access is nearly immediate.
