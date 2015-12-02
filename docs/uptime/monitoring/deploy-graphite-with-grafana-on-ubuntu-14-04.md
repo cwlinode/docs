@@ -2,8 +2,8 @@
 author:
     name: Linode Community
     email: docs@linode.com
-description: 'Graphite is an enterprise-level monitoring tool reknown for its performance on systems with limited resources. It stores numeric time-series data and renders graphs of this data on demand. This guide provides an introduction to installation and basic setup of Graphite together with Grafana.'
-keywords: 'graphite,grafana,monitor,monitoring,analytics'
+description: 'Graphite, an enterprise-level monitoring tool, is renowned for its performance on systems of limited resources. It stores numeric time-series data and renders graphs of this data on demand. This guide provides an introduction to the installation and basic setup of Graphite together with Grafana.'
+keywords: 'graphite,grafana,monitor,monitoring tool,numeric time series data'
 license: '[CC BY-ND 3.0](http://creativecommons.org/licenses/by-nd/3.0/us/)'
 modified: 'Tuesday, December 1st, 2015'
 modified_by:
@@ -23,11 +23,11 @@ external_resources:
 *This is a Linode Community guide. Write for us and earn $250 per published guide.*
 <hr>
 
-[Graphite](http://graphite.readthedocs.org/en/latest/index.html) is an enterprise-level monitoring tool reknown for performing well on systems with limited resources. It stores numeric time-series data and renders graphs of this data on demand. This guide provides an introduction to installation and basic setup of Graphite together with [Grafana](http://grafana.org/), a popular open source application for visualizing large-scale measurement data, on Ubuntu 14.04.
+[Graphite](http://graphite.readthedocs.org/en/latest/index.html) is an enterprise-level monitoring tool renowned for performing well on systems of limited resources. It stores numeric time-series data and renders graphs of this data on demand. This guide provides an introduction to the installation and basic setup of Graphite together with [Grafana](http://grafana.org/), a popular open-source application for visualizing large-scale measurement data, on Ubuntu 14.04.
 
-## Before You Begin
+## Before You Install Graphite
 
-1.  Familiarize yourself with our [Getting Started](/docs/getting-started) guide and complete the steps for setting your Linode's hostname and timezone.
+1.  Familiarize yourself with our [Getting Started](/docs/getting-started) guide, and complete the steps for setting your Linode's hostname and timezone.
 
 2.  This guide will use `sudo` wherever possible from an example account named `graphite`. Complete the sections of our [Securing Your Server](/docs/security/securing-your-server) guide to create the `graphite` user, harden SSH access, remove unnecessary network services and set up a firewall. You may need to create additional firewall rules for your specific application.
 
@@ -42,13 +42,13 @@ external_resources:
 
         sudo apt-get install build-essential graphite-web graphite-carbon python-dev apache2 libapache2-mod-wsgi libpq-dev python-psycopg2
 
-	During the installation of `graphite-carbon`, you will be asked if you want to remove the whisper database files if you were ever to uninstall Graphite. Answer **No** here. You can always remove the files later (which are located in `/var/lib/graphite/whisper`).
+	During the installation of `graphite-carbon`, you will be asked if you want to remove the whisper database files should you ever uninstall Graphite. Answer **No** to this prompt. You can always remove the files later (which are located in `/var/lib/graphite/whisper`).
 
 ## Configure Carbon
 
 1.  Configure the retention rate for test metrics by adding a `[test]` block to Carbon's `storage-schemas.conf` file. *This step is given for testing purposes only and can be safely skipped if you have no use to generate test metrics.*
 
-	The retention times given below will save data every 5 seconds for 3 hours, and a separate set of data from that aggregated sample every 1 minute for 1 day.
+	The retention times given below will save data every five (5) seconds for three (3) hours and a separate data set from that aggregated sample every one (1) minute for one (1) day.
 
 	{: .file-excerpt}
 	/etc/carbon/storage-schemas.conf
@@ -68,7 +68,7 @@ external_resources:
 
 	For more information on how to configure Carbon storage, see the section [storage-schemas.conf](http://graphite.readthedocs.org/en/latest/config-carbon.html#storage-schemas-conf) in Graphite's documentation.
 
-2.  Copy the defaut aggregation configuration to `/etc/carbon` so we can configure our own settings:
+2.  Copy the defaut aggregation configuration to `/etc/carbon`, so we can configure our own settings:
 
 		sudo cp /usr/share/doc/graphite-carbon/examples/storage-aggregation.conf.example /etc/carbon/storage-aggregation.conf
 
@@ -140,11 +140,11 @@ external_resources:
 
 	*   SECRET_KEY is a long and unique string used as a salt when hashing passwords.
 
-3.  Initialize the database with:
+3.  Initialize the database:
 
 		sudo graphite-manage syncdb
 
-4.  Then answer the prompts to create a superuser account which will be used to access Graphite's web interface.
+4.  Then, answer the prompts to create a superuser account which will be used to access Graphite's web interface.
 
 
 ## Configure Apache for Graphite
@@ -153,7 +153,7 @@ external_resources:
 
 		sudo cp /usr/share/graphite-web/apache2-graphite.conf /etc/apache2/sites-available
 
-2.  Change Graphite's port from 80 to 8080 (port 80 will be used for Grafana later on).
+2.  Change Graphite's port from 80 to 8080 (port 80 will be used for Grafana later):
 
 	{: .file}
 	/etc/apache2/sites-available/apache2-graphite.conf
@@ -161,7 +161,7 @@ external_resources:
 		<VirtualHost *:8080>		
     	~~~
 
-3.  Then make sure Apache is listening on port 8080. Add `Listen 8080` after `Listen 80` in `ports.conf`:
+3.  Make sure Apache is listening on port 8080. Add `Listen 8080` after `Listen 80` in `ports.conf`:
 
 	{: .file-excerpt}
 	/etc/apache2/ports.conf
@@ -192,7 +192,7 @@ external_resources:
 
 		for i in 4 6 8 16 2; do echo "test.count $i `date +%s`" | nc -q0 127.0.0.1 2003; sleep 6; done
 
-	Wait for the command prompt to be returned; refresh the page and you should see a new `test.count` metric in the tree on the left:
+2.  Wait for the command prompt to be returned. Refresh the page and you should see a new `test.count` metric in the tree on the left:
 
 	![Graphite test metric](/docs/assets/graphite_test_metric.png)
 
@@ -202,7 +202,7 @@ external_resources:
 
 		echo 'deb https://packagecloud.io/grafana/stable/debian/ wheezy main' |  sudo tee -a /etc/apt/sources.list
 
-2.  Add the [Package Cloud](https://packagecloud.io/grafana) key to install signed packages.
+2.  Add the [Package Cloud](https://packagecloud.io/grafana) key to install signed packages:
 
 		curl https://packagecloud.io/gpg.key | sudo apt-key add -
 
@@ -210,7 +210,7 @@ external_resources:
 
 		sudo apt-get update && sudo apt-get install grafana
 
-4.  Now configure Grafana to use the PostgreSQL database created earlier:
+4.  Configure Grafana to use the PostgreSQL database created earlier:
 
 	{: .file-excerpt}
 	/etc/grafana/grafana.ini
@@ -260,11 +260,11 @@ external_resources:
 		</VirtualHost>
 		~~~
 
-7.  Enable grafana site configuration with:
+7.  Enable grafana site configuration:
 
 		sudo a2ensite apache2-grafana
 
-8.  Configure Grafana to run after boot and then start service:
+8.  Configure Grafana sequence to run after boot and then start service:
 
 		sudo update-rc.d grafana-server defaults 95 10
 		sudo service grafana-server start
@@ -302,9 +302,9 @@ external_resources:
 
 	![Edit graph panel](/docs/assets/graphite_grafana_edit_graph.png)
 
-7.  Make sure the **graphite** data source you've created is chosen in in the dropdown box at the bottom right (marked as 1 in the screenshot below). In the dropdown at the top right corner (marked as 2), choose **Last 15 minutes**.
+7.  Make sure the **graphite** data source you've created is chosen in the dropdown box at the bottom right (marked as 1 in the screenshot below). In the dropdown box at the top right corner (marked as 2), choose **Last 15 minutes**.
 
-	Click **select metric**. Choose **test** and then **count** (marked as 3) to add the test metric you previously created. At this point, visualisation of the sample data should appear on the graph.
+	Click **select metric**. Choose **test** and then **count** (marked as 3) to add the test metric you previously created. At this point, the sample data should appear on the graph.
 
 	Finally, click the **Save** button (marked as 4) to save the dashboard you just created.
 
