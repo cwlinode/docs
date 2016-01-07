@@ -3,7 +3,7 @@ author:
   email: muh.muhten@gmail.com
   name: Michael Zuo
 description: 'CoreOS is a container-centric Linux distribution designed for clustered systems running in the cloud. This guide details installing CoreOS on a KVM Linode.'
-keywords: 'coreos,custom distro,custom distribution,kvm'
+keywords: 'coreos,custom,finnix,lish,kvm'
 license: '[CC BY-ND 3.0](http://creativecommons.org/licenses/by-nd/3.0/us/)'
 modified: 'Monday, November 9th, 2015'
 modified_by:
@@ -16,16 +16,16 @@ title: Install CoreOS on Your Linode
 
 <hr>
 
-[CoreOS](https://coreos.com/) is a container-centric Linux distribution designed for clustered systems running in the cloud. The host system itself provides minimal functionality, with user applications running inside containers.
+[CoreOS](https://coreos.com/) is a container-centric Linux distribution designed for clustered systems running in the cloud. With user applications running inside containers, the host system itself provides minimal functionality.
 
-This guide details installing CoreOS on a **KVM** Linode. If you're currently running a Xen Linode, you can [upgrade](/docs/platform/kvm#how-to-enable-kvm), but it is currently not possible to install CoreOS on a Xen Linode. CoreOS is not officially supported by Linode, so there are some limitations to using it in comparision to the core Linux images provided in the Linode Manager. See [Caveats](#caveats) for more details.
+This guide details installing CoreOS on a **KVM** Linode. If you're running a Xen Linode, you can [upgrade](/docs/platform/kvm#how-to-enable-kvm), but it is currently not possible to install CoreOS on a Xen Linode. CoreOS is not officially supported by Linode, so there are some limitations to using it in comparision to the Linux images provided in the Linode Manager. See [Caveats](#caveats) for more details.
 
 {: .caution}
->These instructions perform **destructive** operations on your Linode. You should not attempt to install CoreOS on a Linode with data you want to keep. You may wish to [use a second Linode](/docs/security/recovering-from-a-system-compromise#using-a-second-linode) and transfer your data after installation.
+>These instructions perform **destructive** operations on your Linode! You should not attempt to install CoreOS on a Linode with data you want to preserve. You may wish to [use a second Linode](/docs/security/recovering-from-a-system-compromise#using-a-second-linode) and transfer your data after installation.
 
 ## Before You Begin
 
-You may want to prepare a [cloud-config file](https://coreos.com/os/docs/latest/cloud-config.html) with authentication details. This is because CoreOS by default configures no way to log in except by supplying an option to the kernel command line.
+CoreOS configures no default way to log in except by supplying an option to the kernel command line. You should prepare a [cloud-config file](https://coreos.com/os/docs/latest/cloud-config.html) with authentication details for your first login. Should you forego this option, you can always add an SSH key through Lish after installation.
 
 
 ## Prepare the Linode
@@ -40,7 +40,7 @@ You may want to prepare a [cloud-config file](https://coreos.com/os/docs/latest/
   
     [![Specify disk name and size](/docs/assets/coreos-disk-image.png)](/docs/assets/coreos-disk-image.png)
 
-   If you're not sure how big your disk image needs to be, you may wish to choose a small size so that you can grow the disk later. You will not be able to shrink the disk image.
+   If you're not sure how big your disk image needs to be, you may wish to choose a small size so that you can grow the disk later. You will not be able to shrink the disk image after it has been generated.
 
 4. Return to the **Linode Dashboard** and select the **Rescue** tab. Check to make sure the CoreOS disk image you created is set as `/dev/sda`, then click the **Reboot into Rescue Mode** button. Your Linode will now boot into the Finnix recovery image.
 
@@ -53,7 +53,7 @@ You may want to prepare a [cloud-config file](https://coreos.com/os/docs/latest/
 
 CoreOS can be installed using a self-contained [script](https://github.com/coreos/init/blob/master/bin/coreos-install) which automates the task of downloading an appropriate release image and copying it to disk.
 
-1.  In order to securely download this script, it's recommended to install the appropriate CA certificates from the Debian repositories.
+1.  In order to securely download this script, it's recommended to install the appropriate CA certificates from the Debian repositories:
 
         apt-get update
         apt-get install ca-certificates
@@ -69,7 +69,7 @@ CoreOS can be installed using a self-contained [script](https://github.com/coreo
 
 ### Cloud-Config File
 
-Now you will want to copy your cloud-config file to your Linode. There are several ways to do this, but it's easiest to simply `cat > cloud-config.yml` and paste into a text editor in your Lish shell. At minimum, you should have an [authorized key](https://coreos.com/os/docs/latest/cloud-config.html#ssh_authorized_keys) for SSH access:
+The easiest way to copy your cloud-config file to your Linode is to simply `cat > cloud-config.yml` and paste into a text editor in your Lish shell. At minimum, you should have an [authorized key](https://coreos.com/os/docs/latest/cloud-config.html#ssh_authorized_keys) for SSH access as shown below.
 
 {: .file}
 /cloud-config.yml
@@ -88,8 +88,7 @@ Now you will want to copy your cloud-config file to your Linode. There are sever
     >
     >You can also supply any other options (see `coreos-install -h`). If you do not want verbose output, you can leave out the `-v` flag.
 
-2.  ADVANCED: at this point, you can modify the image by mounting `/dev/sda9`.  For example, you can make additions to your cloud-config file, you can add an
-`authorized_keys` for the `core` user as follows:
+2.  ADVANCED: At this point, you can modify the image by mounting `/dev/sda9`. For example, you can make additions to your cloud-config file, you can add an `authorized_keys` for the `core` user as follows:
 
         mount /dev/sda9
         cat > /media/sda9/home/core/.ssh/authorized_keys <<EOF
@@ -101,7 +100,7 @@ Now you will want to copy your cloud-config file to your Linode. There are sever
 
 ## Configure your Linode to boot CoreOS
 
-1.  Return to the **Linode Dashboard**, and under **Dashboard** select **Create a new Configuration Profile**.
+1.  Return to the **Linode Dashboard** and under **Dashboard** select **Create a new Configuration Profile**.
 
 2.  Since CoreOS is installed with its own partition table and MBR, we cannot use the Linode-provided kernels. Under **Boot Settings**, click on the **Kernel** drop-down menu and select **Direct Disk**.
 
@@ -111,7 +110,7 @@ Now you will want to copy your cloud-config file to your Linode. There are sever
 
 4.  All other settings can be left in their default state. Click **Save Changes**.
 
-5.  Return to the **Linode Dashboard**, select the new configuration profile, and click **Reboot**
+5.  Return to the **Linode Dashboard**, select the new configuration profile and click **Reboot**
 
 ## Log in to CoreOS
 
@@ -121,7 +120,7 @@ Now you will want to copy your cloud-config file to your Linode. There are sever
         SSH host key: 36:b5:e9:cd:8b:74:e9:52:fd:54:b1:30:78:af:f2:11 (DSA)
         SSH host key: 13:fe:66:49:35:35:5e:64:ae:4f:64:65:e2:98:8a:d4 (ED25519)
         SSH host key: 60:97:2c:b3:bf:2b:42:71:11:42:93:ff:ba:9f:ca:07 (RSA)
-        eth0: 45.33.64.4 2600:3c03::f03c:91ff:fea8:7abf
+        eth0: 203.0.113.0 2001:db8:0:123::1
 
         li1010-4 login: 
 
