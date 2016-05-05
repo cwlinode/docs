@@ -5,8 +5,8 @@ author:
 description: 'Orangescrum is an open source, free project management and collaboration tool for small and medium size businesses. It helps you to manage projects, team, documents, tasks all at one place.'
 keywords: 'Orangescrum, project management, Apache'
 license: '[CC BY-ND 3.0](http://creativecommons.org/licenses/by-nd/3.0/us/)'
-published: 'Weekday, Month 00th, 2016'
-modified: Weekday, Month 00th, 2016
+published: ''
+modified: Thursday, May 5th, 2016
 modified_by:
   name: Linode
 title: 'Manage Projects with Orangescrum on Ubuntu 14.04'
@@ -18,7 +18,7 @@ contributor:
 *This is a Linode Community guide. Write for us and earn $250 per published guide.*
 <hr>
 
-##Introduction
+## Introduction
 
 Orangescrum is an open source, free project management and collaboration tool for small and medium size businesses. It helps you to manage projects, team, documents, tasks all at one place.
 Using OrangeScrum, You can organize your tasks, communicate with the team on important issues, and manage project documents easily.
@@ -28,136 +28,83 @@ OrangeScrum provides various features like collaboration, agile project manageme
 
 ## Before You Begin
 
-1. Ensure that you have followed the Getting Started and the Linode’s hostname is set.
+1.  Ensure that you have followed the Getting Started and the Linode’s hostname is set.
 
-To check your hostname run:
+    To check your hostname run:
 
-	hostname
-	hostname -f
+        hostname
+        hostname -f
 
-The first command should show your short hostname, and the second should show your fully qualified domain name (FQDN).
+    The first command should show your short hostname, and the second should show your fully qualified domain name (FQDN).
 
-2. Update your system:
+2.  Update your system:
 
-	sudo apt-get update -y
+        sudo apt-get update -y
 
 {: .note}
 >
 >This guide is written for a non-root user. Commands that require elevated privileges are prefixed with `sudo`. If you're not familiar with the `sudo` command, you can check our [Users and Groups](/docs/tools-reference/linux-users-and-groups) guide.
 
 
-##Requirements
+## Requirements
 
-<ul>Server running Ubuntu 14.04
-<ul>Static IP Address for your server
+ - Server running Ubuntu 14.04
+ - Static IP Address for your server
+ - A Running LAMP Stack
 
-##Install Mysql
+## Download the Orangescrum and Upload it to Apache Web root
 
-1. By default mysql package is available in Ubuntu 14.04 repository.
+1.  You can download the orangescrum open source version from url `https://github.com/Orangescrum/orangescrum`.
 
-So, you can install mysql using following command:
+    To download Orangescrum run:
 
-	sudo apt-get install mysql-server
+        wget https://github.com/Orangescrum/orangescrum/archive/master.zip
 
-2. After this, start mysql service and enable mysql to start on boot.
+2.  After downloading orangescrum, You need to unzip `master.zip`.
 
-	sudo /etc/init.d/mysql start
-	sudo update-rc.d mysql defaults
+    To unzip `master.zip` file run:
 
-##Install Php and Apache
+        unzip master.zip
 
-1. After installing mysql, you need to install Php and Apache.
+3.  After this, You will find `orangescrum-master` directory.
 
-To do this run:
+    Now, move this directory with name orangescrumPM to your Apache web root directory.
 
-	sudo apt-get install   libapache2-mod-php5 php5 php5-cli php5-common php5-gd php5-mcrypt php5-mysql apache2
+    You can do this by running:
 
-2. After this, start Apache service and enable Apache to start on boot.
+        sudo mv orangescrum-master /var/www/html/orangescrumPM
 
-To do this run:
+4.  Give proper permission to `orangescrumPM` directory.
 
-	sudo /etc/init.d/apache2 start
-	sudo update-rc.d apache2 defaults
-
-
-##Download the Orangescrum and Upload it to Apache Web root
-
-1. You can download the orangescrum open source version from url `https://github.com/Orangescrum/orangescrum`.
-
-To download Orangescrum run:
-
-	sudo wget https://github.com/Orangescrum/orangescrum/archive/master.zip
-
-2. After downloading orangescrum, You need to unzip `master.zip`.
-
-To unzip `master.zip` file run:
-
-	sudo unzip master.zip
-
-3. After this, You will find `orangescrum-master` directory.
-
-Now, move this directory with name orangescrumPM to your Apache web root directory.
-
-You can do this by running:
-
-	sudo mv orangescrum-master /var/www/html/orangescrumPM
-
-4. Give proper permission to `orangescrumPM` directory.
-
-	sudo chown -R www-data:www-data /var/www/html/orangescrumPM
-	sudo chmod -R 777 /var/www/html/orangescrumPM
+        sudo chown -R www-data:www-data /var/www/html/orangescrumPM
+        sudo chmod -R 777 /var/www/html/orangescrumPM
 
 ##Configure Mysql 
 
-1. First of all you need to setup the MySql root password.
+1.  Log in to mysql, create database and user for orangescrum.
 
-You can do this by running:
+        sudo mysql -u root -p
 
-	sudo mysql_secure_installation
+3.  create the database with name orangescrum:
 
-Answer all the questions shown as below:
+        create database orangescrum;
 
-Enter current password for root (enter for none): **currentrootpasswd**
-Set root password? [Y/n]: **Press Enter**
-New password: **rootsqlpasswd**
-Re-enter new password: **rootsqlpasswd**
-Remove anonymous users? [Y/n]: **Press Enter**
-Disallow root login remotely? [Y/n]: **Press Enter**
-Remove test database and access to it? [Y/n] : **Press Enter**
-Reload privilege tables now? [Y/n] : **Press Enter**
+4.  create the user with name orangescrum:
 
-All done! If you've completed all of the above steps, your MySQL installation should now be secure.
+        create user orangescrum;
 
-2. Now, You need login to mysql, create database and user for orangescrum.
+5.  Grant all privileges while assigning the password:
 
-You can do this by running following command:
+        grant all on orangescrum.* to 'orangescrum'@'localhost' identified by 'orangescrum';
 
-login to mysql:
+6.  Exit from the mysql shell:
 
-	sudo mysql -u root -p
+        exit
 
-3. create the database with name orangescrum:
+7.  Now, You need to import database from `database.sql` file located in `/var/www/html/orangescrumPM` directory.
 
-	mysql> create database orangescrum;
-
-4. create the user with name orangescrum:
-
-	mysql> create user orangescrum;
-
-5. Grant all privileges while assigning the password:
-
-	mysql> grant all on orangescrum.* to 'orangescrum'@'localhost' identified by 'orangescrum';
-
-6. Exit from the mysql shell:
-
-	mysql> exit
-
-7. Now, You need to import database from `database.sql` file located in `/var/www/html/orangescrumPM` directory.
-
-You can do this by running:
-
-	sudo cd /var/www/html/orangescrumPM/
-	sudo mysql -u orangescrum -porangescrum < database.sql
+        cd /var/www/html/orangescrumPM/
+        sudo mysql -u orangescrum -porangescrum < database.sql
 
 8. Next, By default `STRICT mode` is `On` in Mysql. So you need to disable it.
 
