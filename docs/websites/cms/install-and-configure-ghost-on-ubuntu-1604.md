@@ -23,7 +23,7 @@ external_resources:
 
 ![Install Ghost on Ubuntu 16.04](/docs/assets/install-ghost-on-ubuntu-16-04.png)
 
-The Ghost Foundation [officially recommends](https://docs.ghost.org/docs/hosting#section-recommended-stack) the following server stack for production deployments. This guide will instruct how to install and configure it.
+Ghost's documentation [officially recommends](https://docs.ghost.org/docs/hosting#section-recommended-stack) the following server stack for production deployments. This guide will instruct how to install and configure it.
 
 - Ubuntu 16.04 with minimum 1GB of RAM
 - MySQL as the recommended database engine
